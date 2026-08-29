@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!staircase || !workspace) return;
 
   const mobileQuery = window.matchMedia("(max-width: 720px)");
+  let refreshTimer = 0;
 
   function isMobile() {
     return mobileQuery.matches || window.matchMedia("(pointer: coarse)").matches;
@@ -36,10 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const steps = staircase.querySelectorAll(".step");
     let maxRows = 1;
-    const logoSize = parseInt(
-      getComputedStyle(document.documentElement).getPropertyValue("--mobile-logo-size"),
-      10,
-    ) || 52;
+    const logoSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--mobile-logo-size"), 10) || 52;
 
     steps.forEach((step) => {
       const logos = step.querySelectorAll(".step-logo, .step-unknown");
@@ -48,7 +46,6 @@ document.addEventListener("DOMContentLoaded", () => {
       maxRows = Math.max(maxRows, Math.ceil(logos.length / columns));
     });
 
-    // Prevent logos/actions from being clipped above the staircase.
     staircase.style.paddingTop = `${Math.min(420, 112 + maxRows * 62)}px`;
   }
 
@@ -56,15 +53,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!isMobile()) return;
     const target = staircase.querySelector(".step.selected") || staircase.lastElementChild;
     if (!target) return;
-    requestAnimationFrame(() => {
-      target.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    requestAnimationFrame(() => target.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" }));
+  }
+
+  function scheduleRefresh() {
+    cancelAnimationFrame(refreshTimer);
+    refreshTimer = requestAnimationFrame(() => {
+      refreshStaircaseSpace();
+      keepUsefulStepVisible();
     });
   }
 
-  const observer = new MutationObserver(() => {
-    refreshStaircaseSpace();
-    keepUsefulStepVisible();
-  });
+  const observer = new MutationObserver(scheduleRefresh);
   observer.observe(staircase, { childList: true, subtree: true });
 
   window.addEventListener("resize", syncMobileLayout, { passive: true });
