@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   Object.keys(ASSETS_DATA).forEach((key) => (customLogos[key] = []));
 
   const countriesContainer = document.getElementById("countries-container");
+  const countrySearch = document.getElementById("country-search");
   const logosContainer = document.getElementById("logos-container");
   const staircaseContainer = document.getElementById("staircase-container");
   const emptyHint = document.getElementById("empty-hint");
@@ -25,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCountries();
   renderLogos();
   renderStaircase();
+  countrySearch?.addEventListener("input", renderCountries);
 
   mobileToggle.addEventListener("click", () => {
     sidebar.classList.contains("mobile-open") ? closeMobilePanel() : openMobilePanel();
@@ -35,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function openMobilePanel() {
     sidebar.classList.add("mobile-open");
     overlay.classList.remove("hidden");
+    setTimeout(() => countrySearch?.focus({ preventScroll: true }), 120);
   }
   function closeMobilePanel() {
     sidebar.classList.remove("mobile-open");
@@ -188,7 +191,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderCountries() {
     countriesContainer.innerHTML = "";
-    Object.entries(ASSETS_DATA).forEach(([code, data]) => {
+    const query = (countrySearch?.value || "").trim().toLocaleLowerCase();
+    const entries = Object.entries(ASSETS_DATA).filter(([code, data]) => {
+      const label = data.label || data.region || code;
+      return !query || `${code} ${label}`.toLocaleLowerCase().includes(query);
+    });
+
+    entries.forEach(([code, data]) => {
       const btn = document.createElement("button");
       btn.className = "country-btn" + (code === currentCountry ? " active" : "");
       btn.dataset.code = code;
@@ -216,9 +225,17 @@ document.addEventListener("DOMContentLoaded", () => {
         exitSelectMode();
         renderCountries();
         renderLogos();
+        if (window.innerWidth <= 720) countrySearch?.blur();
       });
       countriesContainer.appendChild(btn);
     });
+
+    if (!entries.length) {
+      const empty = document.createElement("div");
+      empty.className = "country-empty";
+      empty.textContent = "Aucun pays ou région";
+      countriesContainer.appendChild(empty);
+    }
   }
 
   function renderLogos() {
