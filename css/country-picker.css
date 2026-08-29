@@ -1,68 +1,73 @@
-/* WASLL Journey — redesigned country/region picker */
+/* WASLL Journey — desktop-first country/region selector */
 #country-picker { display:none !important; }
 
 #country-selector-trigger {
-  width:100%;
+  width: calc(100% - 20px);
+  min-height: 62px;
+  margin: 10px;
   display:flex;
   align-items:center;
   gap:10px;
-  padding:10px 12px;
-  border:0;
-  border-bottom:1px solid var(--off2);
-  background:var(--off);
+  padding:9px 11px;
+  border:1.5px solid var(--black);
+  background:var(--white);
   color:var(--black);
   cursor:pointer;
   text-align:left;
 }
 #country-selector-trigger:hover { background:var(--off2); }
-.country-trigger-flag { width:32px; height:21px; object-fit:cover; flex:0 0 auto; border:1px solid #bbb; }
-.country-trigger-icon { width:32px; height:32px; display:flex; align-items:center; justify-content:center; border:1px solid #bbb; background:var(--white); font-size:17px; flex:0 0 auto; }
+.country-trigger-flag { width:38px; height:25px; object-fit:cover; flex:0 0 38px; border:1px solid #bbb; }
+.country-trigger-icon { width:38px; height:38px; display:flex; align-items:center; justify-content:center; border:1px solid #bbb; background:var(--black); color:#fff; font-size:18px; flex:0 0 38px; }
 .country-trigger-copy { min-width:0; flex:1; }
 .country-trigger-eyebrow { display:block; font:700 8px/1 "Syne",sans-serif; color:var(--muted); letter-spacing:.12em; text-transform:uppercase; margin-bottom:4px; }
-.country-trigger-name { display:block; font:700 13px/1 "Barlow Condensed",sans-serif; letter-spacing:.04em; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.country-trigger-chevron { font-size:16px; color:#777; }
+.country-trigger-name { display:block; font:700 15px/1 "Barlow Condensed",sans-serif; letter-spacing:.04em; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.country-trigger-chevron { font-size:17px; color:#777; }
 
-#country-modal { position:fixed; inset:0; z-index:1000; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.58); padding:24px; }
+#country-modal { position:fixed; inset:0; z-index:1000; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.62); padding:28px; }
 #country-modal.open { display:flex; }
-.country-modal-panel { width:min(760px, calc(100vw - 32px)); max-height:min(720px, calc(100vh - 40px)); background:var(--white); border:2px solid var(--black); box-shadow:10px 10px 0 rgba(0,0,0,.22); display:flex; flex-direction:column; overflow:hidden; }
-.country-modal-head { display:flex; align-items:center; justify-content:space-between; padding:16px 18px; background:var(--black); color:var(--white); flex-shrink:0; }
-.country-modal-title { font:800 20px/1 "Barlow Condensed",sans-serif; letter-spacing:.08em; text-transform:uppercase; }
+.country-modal-panel { width:min(900px,calc(100vw - 56px)); max-height:min(780px,calc(100vh - 56px)); background:var(--white); border:2px solid var(--black); box-shadow:14px 14px 0 rgba(0,0,0,.2); display:flex; flex-direction:column; overflow:hidden; }
+.country-modal-head { display:flex; align-items:center; justify-content:space-between; padding:17px 20px 15px; background:var(--black); color:var(--white); border-bottom:3px solid var(--red); flex-shrink:0; }
+.country-modal-title { font:800 23px/1 "Barlow Condensed",sans-serif; letter-spacing:.08em; text-transform:uppercase; }
+.country-modal-subtitle { margin-top:4px; color:#999; font:600 8px/1 "Syne",sans-serif; letter-spacing:.1em; text-transform:uppercase; }
 .country-modal-close { width:36px; height:36px; border:1px solid #444; background:#1d1d1d; color:#fff; cursor:pointer; font-size:22px; }
-.country-modal-search-wrap { padding:12px; border-bottom:1px solid var(--off2); background:var(--white); flex-shrink:0; }
-#country-modal-search { width:100%; height:44px; border:1.5px solid #bbb; background:var(--off); color:var(--black); padding:0 13px; outline:none; font:600 14px "Syne",sans-serif; }
-#country-modal-search:focus { border-color:var(--black); box-shadow:0 0 0 2px var(--black); }
+.country-modal-close:hover { background:#333; }
+.country-modal-search-wrap { padding:13px 16px 11px; border-bottom:1px solid var(--off2); background:var(--white); flex-shrink:0; }
+#country-modal-search { width:100%; height:43px; border:1.5px solid #bbb; background:#fff; color:var(--black); padding:0 12px; outline:none; font:600 12px "Syne",sans-serif; }
+#country-modal-search:focus { border-color:var(--black); box-shadow:0 0 0 1px var(--black); }
 .country-modal-body { overflow:auto; padding:16px; }
-.country-group { margin-bottom:20px; }
+.country-group { margin-bottom:22px; }
 .country-group:last-child { margin-bottom:0; }
-.country-group-title { margin-bottom:8px; font:700 10px/1 "Syne",sans-serif; color:var(--muted); letter-spacing:.13em; text-transform:uppercase; }
+.country-group-title { margin-bottom:8px; font:700 9px/1 "Syne",sans-serif; color:var(--muted); letter-spacing:.14em; text-transform:uppercase; }
 .country-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
-.country-card { min-height:76px; border:1px solid #c9c8c2; background:var(--white); padding:9px; display:flex; align-items:center; gap:10px; cursor:pointer; text-align:left; color:var(--black); }
+.country-card { min-height:78px; border:1px solid #c9c8c2; background:var(--white); padding:9px; display:flex; align-items:center; gap:10px; cursor:pointer; text-align:left; color:var(--black); }
 .country-card:hover { border-color:var(--black); background:var(--off); }
-.country-card.active { border:2px solid var(--red); padding:8px; background:#fff; }
-.country-card-flag { width:38px; height:25px; object-fit:cover; border:1px solid #bbb; flex:0 0 auto; }
-.country-card-icon { width:38px; height:38px; display:flex; align-items:center; justify-content:center; background:var(--off); border:1px solid #bbb; font:700 18px "Barlow Condensed",sans-serif; flex:0 0 auto; }
+.country-card.active { border:2px solid var(--red); padding:8px; }
+.country-card.custom { background:var(--black); color:#fff; border-color:var(--black); }
+.country-card.custom:hover { background:#242424; }
+.country-card-flag { width:42px; height:28px; object-fit:cover; border:1px solid #bbb; flex:0 0 42px; }
+.country-card-icon { width:42px; height:42px; display:flex; align-items:center; justify-content:center; background:var(--red); color:#fff; border:1px solid var(--red); font:700 20px/1 "Barlow Condensed",sans-serif; flex:0 0 42px; }
 .country-card-copy { min-width:0; }
 .country-card-name { display:block; font:700 13px/1.05 "Barlow Condensed",sans-serif; text-transform:uppercase; letter-spacing:.035em; }
-.country-card-code { display:block; margin-top:4px; font:600 8px/1 "Syne",sans-serif; color:var(--muted); letter-spacing:.08em; }
+.country-card-code { display:block; margin-top:4px; font:600 7px/1.15 "Syne",sans-serif; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; }
+.country-card.custom .country-card-code { color:#aaa; }
 .country-modal-empty { padding:40px 10px; text-align:center; font:700 12px "Barlow Condensed",sans-serif; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
 
+/* Imported mode contains ONLY user-imported logos. */
+body.custom-collection #logos-label::after { content:" · IMPORTÉS UNIQUEMENT"; color:var(--red); }
+body.custom-collection #logos-container > .logo-item:first-child { display:none; }
+body.custom-collection #logos-container:empty::after { content:"Aucun logo importé"; grid-column:1/-1; padding:30px 10px; text-align:center; color:#aaa; font:700 11px "Barlow Condensed",sans-serif; text-transform:uppercase; }
+
+@media (max-width:1000px) {
+  .country-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
 @media (max-width:720px), (hover:none) and (pointer:coarse) {
-  #country-selector-trigger { min-height:58px; padding:10px 14px; }
-  .country-trigger-name { font-size:15px; }
+  #country-selector-trigger { min-height:58px; margin:8px 10px; width:calc(100% - 20px); }
   #country-modal { padding:0; align-items:stretch; }
   .country-modal-panel { width:100%; max-height:none; height:100%; border:0; box-shadow:none; }
-  .country-modal-head { padding:14px 16px; }
-  .country-modal-title { font-size:19px; }
   .country-modal-body { padding:12px; }
   .country-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
-  .country-card { min-height:72px; padding:10px; }
-  .country-card.active { padding:9px; }
   #country-modal-search { height:48px; font-size:16px; }
 }
-
-@media (min-width:721px) {
-  #sidebar { position:relative; }
+@media (max-width:420px) {
+  .country-grid { grid-template-columns:1fr; }
 }
-
-/* Custom collection */
-body.custom-collection #logos-label::after { content:" · IMPORTÉS"; color:var(--red); }
