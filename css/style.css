@@ -175,6 +175,75 @@ body {
   color: var(--muted);
 }
 
+/* Logos header & search */
+.logos-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--white);
+  border-top: var(--border);
+  border-bottom: 1px solid var(--off2);
+  font-family: "Syne", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.logos-count {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--black);
+  background: var(--off2);
+  padding: 2px 6px;
+  border-radius: 10px;
+  letter-spacing: 0.02em;
+}
+
+.logos-search-wrap {
+  padding: 8px 10px;
+  background: var(--white);
+  border-bottom: var(--border);
+  flex-shrink: 0;
+}
+
+.logos-search-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.logos-search-inner .search-icon {
+  position: absolute;
+  left: 9px;
+  color: #888;
+  pointer-events: none;
+}
+
+#logo-search {
+  width: 100%;
+  height: 32px;
+  padding: 0 10px 0 28px;
+  background: var(--off);
+  border: 1px solid #c9c8c2;
+  border-radius: 4px;
+  font-family: "Syne", sans-serif;
+  font-size: 11px;
+  color: var(--black);
+  outline: none;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+#logo-search:focus {
+  background: var(--white);
+  border-color: var(--black);
+  box-shadow: 0 0 0 1px var(--black);
+}
+
 .adding-hint {
   position: absolute;
   inset: 0;
@@ -188,6 +257,7 @@ body {
   color: var(--red);
   background: var(--white);
   border-bottom: 2px solid var(--red);
+  z-index: 5;
 }
 .adding-hint.hidden {
   display: none;
@@ -219,59 +289,106 @@ body {
 }
 
 .logo-item {
-  aspect-ratio: 1;
+  min-height: 84px;
   border: var(--border);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   cursor: pointer;
-  padding: 7px;
+  padding: 6px 4px 5px;
   background: var(--white);
+  border-radius: 4px;
   transition:
     background 0.12s,
-    transform 0.08s;
+    border-color 0.12s,
+    transform 0.08s,
+    box-shadow 0.12s;
   overflow: hidden;
   position: relative;
 }
 .logo-item:hover {
-  background: var(--black);
-  transform: scale(1.04);
+  border-color: var(--black);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
 }
 .logo-item:active {
   transform: scale(0.96);
 }
-.logo-item img {
+.logo-item-visual {
+  flex: 1;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
 }
-.logo-item:hover img {
-  filter: invert(1);
+.logo-item-visual img {
+  max-width: 100%;
+  max-height: 48px;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+  transform: translateZ(0);
+}
+
+.logo-item-caption {
+  width: 100%;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #333;
+  margin-top: 4px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+.logo-item:hover .logo-item-caption {
+  color: var(--black);
 }
 
 .unknown-icon {
   font-family: "Barlow Condensed", sans-serif;
   font-weight: 700;
-  font-size: 30px;
+  font-size: 28px;
   color: var(--black);
-}
-.logo-item:hover .unknown-icon {
-  color: var(--white);
 }
 
 .logo-missing {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  font-size: 8px;
-  font-weight: 700;
-  color: #bbb;
-  text-align: center;
-  word-break: break-all;
+  justify-content: center;
+  font-size: 20px;
 }
-.logo-missing .miss-icon {
-  font-size: 16px;
+
+.logos-empty-state {
+  grid-column: 1 / -1;
+  padding: 24px 12px;
+  text-align: center;
+  color: var(--muted);
+  font-family: "Syne", sans-serif;
+  font-size: 11px;
+}
+.logos-empty-state p {
+  margin-bottom: 10px;
+}
+.logos-reset-btn {
+  background: var(--black);
+  color: #fff;
+  border: none;
+  padding: 5px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: 3px;
+  cursor: pointer;
 }
 
 /* ══════════════════════════════════════
@@ -284,6 +401,40 @@ body {
   min-width: 0;
   overflow: hidden;
   background: #111;
+}
+
+/* Selection banner */
+.selection-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--red);
+  color: var(--white);
+  padding: 8px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  z-index: 50;
+  flex-shrink: 0;
+}
+.selection-banner.hidden {
+  display: none;
+}
+.selection-banner button {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: "Syne", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.selection-banner button:hover {
+  background: rgba(0, 0, 0, 0.5);
 }
 
 /* Toolbar */
@@ -326,28 +477,59 @@ body {
   flex-shrink: 0;
 }
 .toolbar-btn {
-  width: 32px;
   height: 32px;
+  min-width: 32px;
+  padding: 0 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   background: #2a2a2a;
   border: 1px solid #3a3a3a;
   color: #aaa;
   cursor: pointer;
   border-radius: 4px;
+  font-family: "Syne", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   transition:
     background 0.12s,
-    color 0.12s;
+    color 0.12s,
+    transform 0.08s;
 }
 .toolbar-btn:hover {
   background: #3a3a3a;
   color: var(--white);
 }
+.toolbar-btn:active {
+  transform: scale(0.96);
+}
+.toolbar-btn.primary {
+  background: var(--red);
+  border-color: var(--red);
+  color: var(--white);
+}
+.toolbar-btn.primary:hover {
+  background: var(--red-dark);
+}
+.toolbar-btn.accent {
+  background: #2e2e2e;
+  border-color: #4a4a4a;
+  color: var(--white);
+}
+.toolbar-btn.accent:hover {
+  background: #3e3e3e;
+}
 .toolbar-btn.danger:hover {
   background: #3a0a0a;
   border-color: var(--red);
   color: var(--red);
+}
+.toolbar-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
 #mobile-toggle {
   display: none;
@@ -399,10 +581,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  pointer-events: none;
+  gap: 14px;
   user-select: none;
   color: #ccc;
+  text-align: center;
 }
 #empty-hint .hint-icon {
   width: 64px;
@@ -421,8 +603,30 @@ body {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   text-align: center;
-  color: #ccc;
-  line-height: 1.6;
+  color: #aaa;
+  line-height: 1.5;
+}
+.start-journey-btn {
+  background: var(--black);
+  color: var(--white);
+  border: 1.5px solid var(--black);
+  padding: 9px 18px;
+  font-family: "Syne", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 4px;
+  pointer-events: auto;
+  transition: background 0.15s, transform 0.08s;
+}
+.start-journey-btn:hover {
+  background: #242424;
+  transform: translateY(-1px);
+}
+.start-journey-btn:active {
+  transform: scale(0.96);
 }
 
 /* ══════════════════════════════════════
@@ -515,6 +719,9 @@ body {
   height: 72px;
   object-fit: contain;
   cursor: pointer;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+  transform: translateZ(0);
   transition:
     opacity 0.15s,
     transform 0.1s;
@@ -550,7 +757,7 @@ body {
   font-size: 11px;
   font-weight: 600;
   text-align: center;
-  padding: 3px 8px;
+  padding: 4px 8px;
   min-width: 90px;
   max-width: 130px;
   outline: none;
@@ -563,6 +770,13 @@ body {
   border-radius: 2px;
   color: var(--black);
   letter-spacing: 0.02em;
+  position: relative;
+}
+.date-input:empty::before {
+  content: "Années...";
+  color: #bbb;
+  pointer-events: none;
+  font-size: 10px;
 }
 .date-input:hover {
   border-color: #bbb;

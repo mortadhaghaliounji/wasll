@@ -18,8 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
     CUSTOM:"custom personnel importé importés mes logos", UK:"Britain England Great Britain Royaume Uni", US:"USA United States America",
     QC:"Quebec Québec", CA:"Canada", BE:"Belgium Belgique", TN:"Tunisia Tunisie"
   };
-  const groups = ["Personnel", "Amérique du Nord", "Europe", "Afrique du Nord", "Amérique du Sud", "Asie", "Océanie"];
-  const qcFlag = "https://commons.wikimedia.org/wiki/Special:Redirect/file/Flag_of_Quebec.svg";
+  const groups = ["Personnel", "Europe", "Afrique du Nord", "Amérique du Nord", "Amérique du Sud", "Asie", "Océanie"];
+  const qcFlag = "assets/QC/flag.svg";
 
   const trigger = document.createElement("button");
   trigger.id = "country-selector-trigger";
@@ -76,10 +76,22 @@ document.addEventListener("DOMContentLoaded", () => {
     close();
   }
 
+  function getFlagSrc(code, data) {
+    if (data?.flagSrc) return data.flagSrc;
+    if (code === "QC") return qcFlag;
+    if (data?.flag) return `https://flagcdn.com/w80/${data.flag.toLowerCase()}.png`;
+    return null;
+  }
+
   function flagFor(code, data, triggerMode = false) {
-    if (code === "QC") return `<img class="${triggerMode ? "country-trigger-flag" : "country-card-flag"}" src="${qcFlag}" alt="Drapeau du Québec">`;
+    const cls = triggerMode ? "country-trigger-flag" : "country-card-flag";
     if (code === "CUSTOM") return `<span class="${triggerMode ? "country-trigger-icon" : "country-card-icon"}">＋</span>`;
-    return `<span class="fi fi-${data.flag} ${triggerMode ? "country-trigger-flag" : "country-card-flag"}"></span>`;
+    const src = getFlagSrc(code, data);
+    const flagClass = data?.flag ? `fi fi-${data.flag}` : "";
+    if (src) {
+      return `<img class="${cls}" src="${src}" alt="${names[code] || code}" loading="eager" onerror="this.outerHTML='<span class=\\'${cls} ${flagClass}\\'></span>'" />`;
+    }
+    return `<span class="${cls} ${flagClass}"></span>`;
   }
 
   function render() {

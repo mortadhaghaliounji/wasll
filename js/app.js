@@ -8,11 +8,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const countriesContainer = document.getElementById("countries-container");
   const countrySearch = document.getElementById("country-search");
+  const logoSearch = document.getElementById("logo-search");
+  const logosCount = document.getElementById("logos-count");
   const logosContainer = document.getElementById("logos-container");
   const staircaseContainer = document.getElementById("staircase-container");
   const emptyHint = document.getElementById("empty-hint");
+  const startJourneyBtn = document.getElementById("start-journey-btn");
   const importFileInput = document.getElementById("import-file");
   const downloadBtn = document.getElementById("download-btn");
+  const toolbarExportBtn = document.getElementById("toolbar-export-btn");
   const undoBtn = document.getElementById("undo-btn");
   const clearBtn = document.getElementById("clear-btn");
   const mobileToggle = document.getElementById("mobile-toggle");
@@ -22,29 +26,39 @@ document.addEventListener("DOMContentLoaded", () => {
   const addingHint = document.getElementById("adding-hint");
   const logosLabel = document.getElementById("logos-label");
   const journeyTitle = document.getElementById("journey-title");
+  const selectionBanner = document.getElementById("selection-banner");
+  const cancelSelectionBtn = document.getElementById("cancel-selection-btn");
 
   renderCountries();
   renderLogos();
   renderStaircase();
   countrySearch?.addEventListener("input", renderCountries);
+  logoSearch?.addEventListener("input", renderLogos);
 
   mobileToggle.addEventListener("click", () => {
     sidebar.classList.contains("mobile-open") ? closeMobilePanel() : openMobilePanel();
   });
+  startJourneyBtn?.addEventListener("click", () => {
+    openMobilePanel();
+  });
   overlay.addEventListener("click", closeMobilePanel);
   sidebarCloseBtn.addEventListener("click", closeMobilePanel);
+  cancelSelectionBtn?.addEventListener("click", exitSelectMode);
 
   function openMobilePanel() {
     sidebar.classList.add("mobile-open");
     overlay.classList.remove("hidden");
-    setTimeout(() => countrySearch?.focus({ preventScroll: true }), 120);
+    setTimeout(() => {
+      if (logoSearch) {
+        logoSearch.focus({ preventScroll: true });
+      }
+    }, 150);
   }
   function closeMobilePanel() {
     sidebar.classList.remove("mobile-open");
     overlay.classList.add("hidden");
     selectedStepId = null;
-    addingHint.classList.add("hidden");
-    logosLabel.style.display = "";
+    syncSelectionState();
     renderStaircase();
   }
 
@@ -56,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
   undoBtn.addEventListener("click", () => {
     if (!history.length) return;
     steps = JSON.parse(history.pop());
+    exitSelectMode();
     renderStaircase();
   });
 
@@ -63,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!steps.length || !confirm("Effacer tout le parcours ?")) return;
     pushHistory();
     steps = [];
-    selectedStepId = null;
+    exitSelectMode();
     renderStaircase();
   });
 
@@ -72,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (e) => {
-      customLogos[currentCountry].push({ name: file.name, src: e.target.result });
+      customLogos[currentCountry].push({ name: file.name.replace(/\.[^/.]+$/, ""), src: e.target.result });
       renderLogos();
       importFileInput.value = "";
     };
@@ -80,11 +95,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   downloadBtn.addEventListener("click", exportImage);
+  toolbarExportBtn?.addEventListener("click", exportImage);
 
   async function exportImage() {
     if (!steps.length) return alert("Ajoutez au moins un logo pour exporter votre parcours !");
-    downloadBtn.disabled = true;
-    downloadBtn.querySelector("span").textContent = "Génération…";
+    const btns = [downloadBtn, toolbarExportBtn].filter(Boolean);
+    btns.forEach(b => {
+      b.disabled = true;
+      const t = b.querySelector("span");
+      if (t) t.textContent = "Génération…";
+    });
     try {
       const url = await buildExportCanvas();
       const a = document.createElement("a");
@@ -95,13 +115,16 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error(error);
       alert("Erreur lors de l'exportation.");
     } finally {
-      downloadBtn.disabled = false;
-      downloadBtn.querySelector("span").textContent = "Exporter";
+      btns.forEach(b => {
+        b.disabled = false;
+        const t = b.querySelector("span");
+        if (t) t.textContent = "Exporter";
+      });
     }
   }
 
   async function buildExportCanvas() {
-    const DPR = 2;
+    const DPR = Math.max(2, window.devicePixelRatio || 2);
     const STEP_W = 160, BASE_H = 50, INC_H = 40;
     const PAD_L = 80, PAD_R = 60, PAD_T = 220, PAD_B = 70;
     const LOGO_SIZE = 80, LINE_W = 3;
@@ -115,6 +138,8 @@ document.addEventListener("DOMContentLoaded", () => {
     canvas.height = canvasH * DPR;
     const ctx = canvas.getContext("2d");
     ctx.scale(DPR, DPR);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
     ctx.fillStyle = BG;
     ctx.fillRect(0, 0, canvasW, canvasH);
 
@@ -184,7 +209,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => resolve(img);
-      img.onerror = () => resolve(null);
+      img.onerror = () => {
+        // Fallback without crossOrigin
+        const fallback = new Image();
+        fallback.onload = () => resolve(fallback);
+        fallback.onerror = () => resolve(null);
+        fallback.src = src;
+      };
       img.src = src;
     });
   }
@@ -205,13 +236,19 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.title = label;
       btn.setAttribute("aria-label", label);
 
-      if (data.flagSrc) {
+      const flagSrc = data.flagSrc || (data.flag ? `https://flagcdn.com/w80/${data.flag.toLowerCase()}.png` : null);
+      if (flagSrc) {
         const img = document.createElement("img");
-        img.src = data.flagSrc;
-        img.alt = "";
+        img.src = flagSrc;
+        img.alt = label;
         img.className = "country-flag-image";
+        img.onerror = () => {
+          if (data.flag) {
+            img.outerHTML = `<span class="fi fi-${data.flag}"></span>`;
+          }
+        };
         btn.appendChild(img);
-      } else {
+      } else if (data.flag) {
         btn.innerHTML = `<span class="fi fi-${data.flag}"></span>`;
       }
 
@@ -240,26 +277,83 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderLogos() {
     logosContainer.innerHTML = "";
-    appendLogoItem({ name: "Inconnu", src: null }, true);
-    ASSETS_DATA[currentCountry].files.forEach((asset) => appendLogoItem(asset, false));
-    customLogos[currentCountry].forEach((asset) => appendLogoItem(asset, false));
+    const q = (logoSearch?.value || "").trim().toLowerCase();
+    const allFiles = [
+      ...(ASSETS_DATA[currentCountry]?.files || []),
+      ...(customLogos[currentCountry] || [])
+    ];
+
+    const unknownMatches = !q || "inconnu ? independant neutre aucun non affilie".includes(q);
+    const filteredFiles = allFiles.filter((asset) => {
+      if (!q) return true;
+      const haystack = `${asset.name || ""} ${asset.rawFile || ""}`.toLowerCase();
+      return haystack.includes(q);
+    });
+
+    const totalCount = allFiles.length;
+    if (logosCount) {
+      if (q) {
+        logosCount.textContent = `${filteredFiles.length} / ${totalCount}`;
+      } else {
+        logosCount.textContent = `${totalCount} parti${totalCount > 1 ? "s" : ""}`;
+      }
+    }
+
+    if (unknownMatches) {
+      appendLogoItem({ name: "Inconnu / Sans étiquette", src: null }, true);
+    }
+
+    filteredFiles.forEach((asset) => appendLogoItem(asset, false));
+
+    if (!filteredFiles.length && !unknownMatches) {
+      const empty = document.createElement("div");
+      empty.className = "logos-empty-state";
+      empty.innerHTML = `
+        <p>Aucun parti ne correspond à « <strong>${escHtml(q)}</strong> »</p>
+        <button type="button" class="logos-reset-btn">Effacer la recherche</button>
+      `;
+      empty.querySelector(".logos-reset-btn").addEventListener("click", () => {
+        if (logoSearch) {
+          logoSearch.value = "";
+          renderLogos();
+          logoSearch.focus();
+        }
+      });
+      logosContainer.appendChild(empty);
+    }
   }
 
   function appendLogoItem(asset, isUnknown) {
     const div = document.createElement("div");
+    const name = asset.name || (isUnknown ? "Inconnu / Sans étiquette" : "Logo");
     div.className = "logo-item";
+    div.title = name;
+    div.setAttribute("aria-label", name);
+
+    const visual = document.createElement("div");
+    visual.className = "logo-item-visual";
+
     if (isUnknown) {
-      div.innerHTML = `<span class="unknown-icon">?</span>`;
+      visual.innerHTML = `<span class="unknown-icon">?</span>`;
     } else {
       const img = document.createElement("img");
       img.src = asset.src;
-      img.alt = asset.name || "Logo";
+      img.alt = name;
       img.loading = "lazy";
+      img.decoding = "async";
       img.onerror = () => {
-        div.innerHTML = `<div class="logo-missing"><span class="miss-icon">?</span><span>${escHtml(asset.name || "Logo")}</span></div>`;
+        visual.innerHTML = `<div class="logo-missing"><span class="miss-icon">🏛️</span></div>`;
       };
-      div.appendChild(img);
+      visual.appendChild(img);
     }
+
+    const caption = document.createElement("div");
+    caption.className = "logo-item-caption";
+    caption.textContent = isUnknown ? "Inconnu" : name;
+
+    div.appendChild(visual);
+    div.appendChild(caption);
+
     div.addEventListener("click", () => {
       onLogoClick(asset.src);
       if (window.innerWidth <= 720) closeMobilePanel();
@@ -282,21 +376,29 @@ document.addEventListener("DOMContentLoaded", () => {
     renderStaircase();
   }
 
+  function syncSelectionState() {
+    if (selectedStepId === null) {
+      addingHint.classList.add("hidden");
+      logosLabel.style.display = "";
+      selectionBanner?.classList.add("hidden");
+    } else {
+      addingHint.classList.remove("hidden");
+      logosLabel.style.display = "none";
+      selectionBanner?.classList.remove("hidden");
+    }
+  }
+
   function exitSelectMode() {
     selectedStepId = null;
-    addingHint.classList.add("hidden");
-    logosLabel.style.display = "";
+    syncSelectionState();
+    renderStaircase();
   }
 
   function toggleSelectStep(id) {
     selectedStepId = selectedStepId === id ? null : id;
-    if (selectedStepId === null) {
-      addingHint.classList.add("hidden");
-      logosLabel.style.display = "";
-    } else {
-      addingHint.classList.remove("hidden");
-      logosLabel.style.display = "none";
-      if (window.innerWidth <= 720) openMobilePanel();
+    syncSelectionState();
+    if (selectedStepId !== null && window.innerWidth <= 720) {
+      openMobilePanel();
     }
     renderStaircase();
   }

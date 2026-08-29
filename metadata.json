@@ -1,0 +1,6 @@
+{
+  "name": "Wasll Political Journey",
+  "description": "Visualise and trace your political journey by creating interactive timelines of political parties and movements.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
