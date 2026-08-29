@@ -1,41 +1,60 @@
+const WIKI = (file) => `https://commons.wikimedia.org/wiki/Special:Redirect/file/${encodeURIComponent(file)}`;
+
 const ASSETS_DATA = {
-    "FR": {
-        flag: "fr", 
-        files: ["af.svg", "upr.png", "r!.png", "dlf.svg", "il.png", "rn.png", "udr.svg", "rpf.svg", "ump.png", "lr.png", "horizons.png", "pr.png", "re.png", "modem.png", "pp.png", "ps.png", "sfio.svg", "gens.png", "apres.png", "lfi.png", "pcf.png", "eelv.png", "nfp.png", "nupes.png", "cgt.png"]
-    },
-    "UK": {
-        flag: "gb",
-        files: [ "ukip.png", "adv.jpg", "rest.png", "ref.png", "cons.png", "lab.png", "liberal.png", "libdem.png", "green.png", "yourparty.svg", "snp.png", "sf.png", "dup.png", "cd.png"]
-    },
-    "TN": {
-        flag: "tn",
+    "FR": { flag: "fr", files: ["af.svg", "upr.png", "r!.png", "dlf.svg", "il.png", "rn.png", "udr.svg", "rpf.svg", "ump.png", "lr.png", "horizons.png", "pr.png", "re.png", "modem.png", "pp.png", "ps.png", "sfio.svg", "gens.png", "apres.png", "lfi.png", "pcf.png", "eelv.png", "nfp.png", "nupes.png", "cgt.png"] },
+    "UK": { flag: "gb", files: ["ukip.png", "adv.jpg", "rest.png", "ref.png", "cons.png", "lab.png", "liberal.png", "libdem.png", "green.png", "yourparty.svg", "snp.png", "sf.png", "dup.png", "cd.png"] },
+    "TN": { flag: "tn", files: ["true25july.png", "ptr.png", "psd.png", "pup.png", "el-amen.png", "fsn.png", "mup.png", "haq.png", "ptv.png", "hizbelhiraq.png", "mjt.png", "mds.png", "ppt.png", "mta.png", "upr.png", "nidaatounes.png", "wafa.png", "paritsocalliberal.png", "ppds.png", "aljoumhouri.png", "mrt.png", "al-massar.png", "pvp.png", "baath.png", "thirdrepublic.png", "echaab.png", "tnp.png", "ennahdha.png", "upl.png", "errahmah.png", "watad.png", "ettakatol.png", "qalbtounes.png", "frontpopulaire.png", "tahyatounes.png", "25july.png", "albadil.png", "alkarama.png", "azimoun.png", "attayar.png", "cn.png", "alamal.png", "pdl.png", "al-qotb.png", "plt.png", "afektounes.png", "popularcurrent.png", "ps.png", "pt.png", "ptpd.png"] },
+    "BE": {
+        flag: "be",
         files: [
-        "true25july.png", "ptr.png",
-        "psd.png", "pup.png",
-        "el-amen.png", "fsn.png",
-        "mup.png", "haq.png",
-        "ptv.png", "hizbelhiraq.png",
-        "mjt.png", "mds.png",
-        "ppt.png", "mta.png",
-        "upr.png", "nidaatounes.png",
-        "wafa.png", "paritsocalliberal.png",
-        "ppds.png", "aljoumhouri.png",
-        "mrt.png", "al-massar.png",
-        "pvp.png", "baath.png",
-        "thirdrepublic.png", "echaab.png",
-        "tnp.png", "ennahdha.png",
-        "upl.png", "errahmah.png",
-        "watad.png", "ettakatol.png",
-        "qalbtounes.png", "frontpopulaire.png",
-        "tahyatounes.png", "25july.png",
-        "albadil.png", "alkarama.png",
-        "azimoun.png", "attayar.png",
-        "cn.png", "alamal.png",
-        "pdl.png", "al-qotb.png",
-        "plt.png", "afektounes.png",
-        "popularcurrent.png",
-        "ps.png",
-        "pt.png",
-        "ptpd.png"
-        ]    }
+            { name: "N-VA", src: WIKI("N-VA logo.svg") },
+            { name: "MR", src: WIKI("MR logo 2023.svg") },
+            { name: "PS", src: WIKI("Socialist Party (Belgium) logo.svg") },
+            { name: "Vooruit", src: WIKI("Vooruit logo (2020).svg") },
+            { name: "Vlaams Belang", src: WIKI("Logo Vlaams Belang.svg") },
+            { name: "Groen", src: WIKI("Groen logo 2022.svg") },
+            { name: "Les Engagés", src: WIKI("Logo les Engagés 2022.svg") }
+        ]
+    },
+    "CA": {
+        flag: "ca",
+        files: [
+            { name: "Liberal Party of Canada", src: WIKI("Liberale Partei Kanadas Logo.svg") },
+            { name: "Conservative Party of Canada", src: WIKI("Logo of the Conservative Party of Canada (2023–present).svg") },
+            { name: "NDP", src: WIKI("NDP-NPD Canada.svg") },
+            { name: "Bloc Québécois", src: WIKI("Bloc Québécois-logo.svg") }
+        ]
+    },
+    "QC": {
+        flag: "ca", region: "QC",
+        files: [
+            { name: "Coalition Avenir Québec", src: WIKI("CAQ logo updated in November 2015.svg") },
+            { name: "Parti Québécois", src: WIKI("Parti Quebecois.svg") },
+            { name: "Québec solidaire", src: WIKI("Logo de Québec solidaire.svg") },
+            { name: "Parti libéral du Québec", src: WIKI("Logo du Parti libéral du Québec (2022 - aujourd'hui).svg") },
+            { name: "Parti conservateur du Québec", src: WIKI("Logo conservateur bleu.svg") }
+        ]
+    },
+    "US": {
+        flag: "us",
+        files: [
+            { name: "Democratic Party", src: WIKI("US Democratic Party 2025 logo (positive).svg") },
+            { name: "Republican Party", src: WIKI("Republican Party (United States) logo.svg") }
+        ]
+    },
+    "DE": {
+        flag: "de",
+        files: [
+            { name: "CDU/CSU", src: WIKI("CDU Logo 2023.svg") },
+            { name: "SPD", src: WIKI("SPD-Logo 2022 (text).svg") },
+            { name: "Alliance 90/The Greens", src: WIKI("Bündnis 90 - Die Grünen Logo.svg") }
+        ]
+    },
+    "ES": {
+        flag: "es",
+        files: [
+            { name: "PSOE", src: WIKI("Logotipo del PSOE.svg") },
+            { name: "Partido Popular", src: WIKI("Partido Popular logo.svg") }
+        ]
+    }
 };
