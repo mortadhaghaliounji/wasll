@@ -191,9 +191,26 @@ document.addEventListener("DOMContentLoaded", () => {
     Object.entries(ASSETS_DATA).forEach(([code, data]) => {
       const btn = document.createElement("button");
       btn.className = "country-btn" + (code === currentCountry ? " active" : "");
-      btn.title = data.region ? `${data.region} — Québec` : code;
-      btn.setAttribute("aria-label", btn.title);
-      btn.innerHTML = `<span class="fi fi-${data.flag}"></span>`;
+      btn.dataset.code = code;
+      const label = data.label || (data.region ? "Québec" : code);
+      btn.title = label;
+      btn.setAttribute("aria-label", label);
+
+      if (data.flagSrc) {
+        const img = document.createElement("img");
+        img.src = data.flagSrc;
+        img.alt = "";
+        img.className = "country-flag-image";
+        btn.appendChild(img);
+      } else {
+        btn.innerHTML = `<span class="fi fi-${data.flag}"></span>`;
+      }
+
+      const name = document.createElement("span");
+      name.className = "country-name";
+      name.textContent = label;
+      btn.appendChild(name);
+
       btn.addEventListener("click", () => {
         currentCountry = code;
         exitSelectMode();
